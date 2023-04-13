@@ -4,68 +4,66 @@ import (
 	"errors"
 	"final/internal/domain"
 	"final/pkg/store"
-	"final/pkg/web"
-	"fmt"
 )
 
-type IRepository interface {
-	GetByID(id int) (*domain.Appointment, error)
+type Repository interface {
+	GetByID(id int) (domain.Appointment, error)
 	GetByPersonalIdNumber(personal_id_number int) (domain.Appointment, error)
 	Create(appointment domain.Appointment) (domain.Appointment, error)
 	Update(id int, appointment domain.Appointment) (domain.Appointment, error)
 	Delete(id int) error
 }
 
-type Repository struct {
-	Store store.StoreInterfaceAppointment
+type repository struct {
+	Storage store.StoreInterfaceAppointment
 }
 
 func NewRepository(storage store.StoreInterfaceAppointment) Repository {
-	return &Repository{
-		Store: storage,
+	return &repository{
+		Storage: storage,
 	}
 }
 
 // GetByID busca un turno por su id
-func (r *Repository) GetByID(id int) (*domain.Appointment, error) {
-	turn, err := r.Store.ReadAppointment(id)
+func (r *repository) GetByID(id int) (domain.Appointment, error) {
+	appointment, err := r.Storage.ReadAppointment(id)
 	if err != nil {
-		return nil, web.NewNotFoundApiError(fmt.Sprintf("appointment_id %d not found"))
+		return domain.Appointment{}, errors.New("appointment not found")
 	}
-	return turn, nil
+	return appointment, nil
 }
 
 // GetByPersonalIdNumber busca un turno por su dni
-func (r *Repository) GetByPersonalIdNumber(personal_id_number int) (*domain.Appointment, error) {
-	appointment, err := r.Store.ReadAppointmentByPersonalIdNumber(personal_id_number)
+func (r *repository) GetByPersonalIdNumber(personal_id_number int) (domain.Appointment, error) {
+	appointment, err := r.Storage.ReadAppointmentByPersonalIdNumber(personal_id_number)
 	if err != nil {
-		return nil, errors.New("appointment not found")
+		return domain.Appointment{}, errors.New("appointment not found")
 	}
 	return appointment, nil
 }
 
 // Create crea un nuevo turno
-func (r *Repository) Create(appointment domain.Appointment) (domain.Appointment, error) {
-	err := r.Store.CreateAppointment(appointment)
+func (r *repository) Create(appointment domain.Appointment) (domain.Appointment, error) {
+	err := r.Storage.CreateAppointment(appointment)
 	if err != nil {
-		return domain.Appointment{}, errors.New("error creating turn")
+		return domain.Appointment{}, errors.New("error creating appointment")
 	}
 	return appointment, nil
 }
 
 // Update actualiza un turno
-func (r *Repository) Update(id int, appointment domain.Appointment) (domain.Appointment, error) {
+func (r *repository) Update(id int, appointment domain.Appointment) (domain.Appointment, error) {
 	appointment.Id = id
-	err := r.Store.UpdateAppointment(appointment)
+	err := r.Storage.UpdateAppointment(appointment)
 	if err != nil {
-		return domain.Appointment{}, errors.New("error updating turn")
+		return domain.Appointment{}, errors.New("error updating appointment")
 	}
 	return appointment, nil
 }
 
 // Delete elimina un paciente
-func (r *Repository) Delete(id int) error {
-	err := r.Store.DeleteAppointment(id)
+func (r *repository) Delete(id int) error {
+	err := r.Storage.DeleteAppointment(id)
 	if err != nil {
 		return err
 	}

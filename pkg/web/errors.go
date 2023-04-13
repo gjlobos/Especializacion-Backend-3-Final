@@ -16,6 +16,10 @@ func NewNotFoundApiError(message string) error {
 	return &ErrorApi{http.StatusNotFound, "not_found", message}
 }
 
+func NewBadRequestApiError(message string) error {
+	return &ErrorApi{http.StatusBadRequest, "bad_request", message}
+}
+
 func NewInternalServerApiError(message string) error {
 	return &ErrorApi{http.StatusInternalServerError, "internal_server_error", message}
 }

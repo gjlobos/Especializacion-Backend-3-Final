@@ -1,2 +1,5 @@
 # Ignorar archivos Macos
 *.DS_Store
+
+# Ignorar archivos .env
+*.env

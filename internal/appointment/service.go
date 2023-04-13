@@ -4,34 +4,34 @@ import (
 	"final/internal/domain"
 )
 
-type IService interface {
-	GetByID(id int) (*domain.Appointment, error)
+type Service interface {
+	GetByID(id int) (domain.Appointment, error)
 	GetByPersonalIdNumber(personal_id_number int) (domain.Appointment, error)
 	Create(appointment domain.Appointment) (domain.Appointment, error)
 	Update(id int, appointment domain.Appointment) (domain.Appointment, error)
 	Delete(id int) error
 }
 
-type Service struct {
-	Repository IRepository
+type service struct {
+	r Repository
 }
 
-func NewService(r IRepository) Service {
-	return &Service{r}
+func NewService(r Repository) Service {
+	return &service{r}
 }
 
 // GetByID busca un turno por su id
-func (s *Service) GetByID(id int) (*domain.Appointment, error) {
-	appointment, err := s.Repository.GetByID(id)
+func (s *service) GetByID(id int) (domain.Appointment, error) {
+	appointment, err := s.r.GetByID(id)
 	if err != nil {
-		return nil, err
+		return domain.Appointment{}, err
 	}
 	return appointment, nil
 }
 
 // GetByPersonalIdNumber busca un turno por su dni
-func (s *Service) GetByPersonalIdNumber(personal_id_number int) (domain.Appointment, error) {
-	appointment, err := s.Repository.GetByPersonalIdNumber(personal_id_number)
+func (s *service) GetByPersonalIdNumber(personal_id_number int) (domain.Appointment, error) {
+	appointment, err := s.r.GetByPersonalIdNumber(personal_id_number)
 	if err != nil {
 		return domain.Appointment{}, err
 	}
@@ -39,8 +39,8 @@ func (s *Service) GetByPersonalIdNumber(personal_id_number int) (domain.Appointm
 }
 
 // Create crea un nuevo turno
-func (s *Service) Create(appointment domain.Appointment) (domain.Appointment, error) {
-	appointment, err := s.Repository.Create(appointment)
+func (s *service) Create(appointment domain.Appointment) (domain.Appointment, error) {
+	appointment, err := s.r.Create(appointment)
 	if err != nil {
 		return domain.Appointment{}, err
 	}
@@ -48,8 +48,8 @@ func (s *Service) Create(appointment domain.Appointment) (domain.Appointment, er
 }
 
 // Update actualiza un turno
-func (s *Service) Update(id int, appointment domain.Appointment) (domain.Appointment, error) {
-	appointment, err := s.Repository.Update(id, appointment)
+func (s *service) Update(id int, appointment domain.Appointment) (domain.Appointment, error) {
+	appointment, err := s.r.Update(id, appointment)
 	if err != nil {
 		return domain.Appointment{}, err
 	}
@@ -57,8 +57,8 @@ func (s *Service) Update(id int, appointment domain.Appointment) (domain.Appoint
 }
 
 // Delete elimina un turno
-func (s *Service) Delete(id int) error {
-	err := s.Repository.Delete(id)
+func (s *service) Delete(id int) error {
+	err := s.r.Delete(id)
 	if err != nil {
 		return err
 	}

@@ -4,33 +4,33 @@ import (
 	"final/internal/domain"
 )
 
-type IService interface {
-	GetByID(id int) (*domain.Patient, error)
+type Service interface {
+	GetByID(id int) (domain.Patient, error)
 	Create(patient domain.Patient) (domain.Patient, error)
 	Update(id int, patient domain.Patient) (domain.Patient, error)
 	Delete(id int) error
 }
 
-type Service struct {
-	Repository IRepository
+type service struct {
+	r Repository
 }
 
-func NewService(r IRepository) Service {
-	return &Service{r}
+func NewService(r Repository) Service {
+	return &service{r}
 }
 
 // GetByID busca un paciente por su id
-func (s *Service) GetByID(id int) (*domain.Patient, error) {
-	patient, err := s.Repository.GetByID(id)
+func (s *service) GetByID(id int) (domain.Patient, error) {
+	patient, err := s.r.GetByID(id)
 	if err != nil {
-		return nil, err
+		return domain.Patient{}, err
 	}
 	return patient, nil
 }
 
 // Create crea un nuevo paciente
-func (s *Service) Create(patient domain.Patient) (domain.Patient, error) {
-	patient, err := s.Repository.Create(patient)
+func (s *service) Create(patient domain.Patient) (domain.Patient, error) {
+	patient, err := s.r.Create(patient)
 	if err != nil {
 		return domain.Patient{}, err
 	}
@@ -38,8 +38,8 @@ func (s *Service) Create(patient domain.Patient) (domain.Patient, error) {
 }
 
 // Update actualiza un paciente
-func (s *Service) Update(id int, patient domain.Patient) (domain.Patient, error) {
-	patient, err := s.Repository.Update(id, patient)
+func (s *service) Update(id int, patient domain.Patient) (domain.Patient, error) {
+	patient, err := s.r.Update(id, patient)
 	if err != nil {
 		return domain.Patient{}, err
 	}
@@ -47,8 +47,8 @@ func (s *Service) Update(id int, patient domain.Patient) (domain.Patient, error)
 }
 
 // Delete elimina un paciente
-func (s *Service) Delete(id int) error {
-	err := s.Repository.Delete(id)
+func (s *service) Delete(id int) error {
+	err := s.r.Delete(id)
 	if err != nil {
 		return err
 	}
